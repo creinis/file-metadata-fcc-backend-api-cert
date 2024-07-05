@@ -20,9 +20,9 @@ app.post("/api/fileanalyse", upload.single('upfile'), (req, res) => {
     name: req.file.originalname,
     type: req.file.mimetype,
     size: req.file.size
-  })
+  });
   
-})
+});
 
 
 const port = process.env.PORT || 3000;
