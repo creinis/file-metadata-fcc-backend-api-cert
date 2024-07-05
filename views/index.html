@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>File Metadata Microservice</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            color: #222;
+            background-color: #ECF0F1;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h2 {
+            margin-bottom: 10px;
+        }
+        .footer {
+            margin-top: 40px;
+        }
+        a {
+            color: #2574A9;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        input {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+        }
+        input[type="file"] {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            background-color: #2574A9;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #1A5276;
+        }
+        .view, .metadata-container {
+            margin-top: 20px;
+        }
+        .metadata-container {
+            text-align: left;
+        }
+        .metadata-item {
+            margin-bottom: 10px;
+        }
+        #preview {
+            margin-top: 10px;
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>File Metadata Microservice</h2>
+        <h3>Usage:</h3>
+        <p>Please upload a file to see its metadata.</p>
+        <div class="view">
+            <h4 id="output"></h4>
+            <form enctype="multipart/form-data" method="POST" action="/api/fileanalyse">
+                <label for="inputfield">Choose a file:</label>
+                <input id="inputfield" type="file" name="upfile" title="Escolha um arquivo para upload" required>
+                <input id="button" type="submit" value="Upload" title="Clique para fazer o upload">
+            </form>
+        </div>
+        <div class="metadata-container" id="metadata-container" style="display:none;">
+            <h3>File Metadata:</h3>
+            <div class="metadata-item"><strong>Name:</strong> <span id="file-name"></span></div>
+            <div class="metadata-item"><strong>Type:</strong> <span id="file-type"></span></div>
+            <div class="metadata-item"><strong>Size:</strong> <span id="file-size"></span> bytes</div>
+            <div class="metadata-item"><strong>Creation Date:</strong> <span id="file-creation-date"></span></div>
+            <div class="metadata-item"><strong>Last Modified Date:</strong> <span id="file-last-modified"></span></div>
+            <div id="preview-container" style="display:none;">
+                <h4>Preview:</h4>
+                <img id="preview" src="" alt="File Preview">
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <p>by <a href="http://www.freecodecamp.com">freeCodeCamp</a></p>
+    </div>
+    <script>
+        document.querySelector('form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const response = await fetch('/api/fileanalyse', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            if (result.error) {
+                alert(result.error);
+                return;
+            }
+
+            document.getElementById('file-name').textContent = result.name;
+            document.getElementById('file-type').textContent = result.type;
+            document.getElementById('file-size').textContent = result.size;
+            document.getElementById('file-creation-date').textContent = new Date(result.creationDate).toLocaleString();
+            document.getElementById('file-last-modified').textContent = new Date(result.lastModifiedDate).toLocaleString();
+
+            const previewContainer = document.getElementById('preview-container');
+            const preview = document.getElementById('preview');
+
+            if (result.type.startsWith('image/')) {
+                preview.src = URL.createObjectURL(document.getElementById('inputfield').files[0]);
+                preview.style.display = 'block';
+                previewContainer.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+                previewContainer.style.display = 'none';
+            }
+
+            document.getElementById('metadata-container').style.display = 'block';
+
+            // Resetar o campo de upload de arquivo
+            document.getElementById('inputfield').value = '';
+        });
+    </script>
+</body>
+</html>
