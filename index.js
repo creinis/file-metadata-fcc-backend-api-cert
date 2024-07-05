@@ -1,5 +1,5 @@
 var express = require('express');
-var cors = require('cors');
+/* var cors = require('cors'); */
 require('dotenv').config()
 const multer = require('multer')
 const upload = multer()
@@ -7,7 +7,7 @@ const upload = multer()
 
 var app = express();
 
-app.use(cors());
+/* app.use(cors()); */
 app.use('/public', express.static(process.cwd() + '/public'));
 
 app.get('/', function (req, res) {
