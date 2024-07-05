@@ -8,10 +8,11 @@ const upload = multer()
 var app = express();
 
 /* app.use(cors()); */
-app.use('/public', express.static(process.cwd() + '/public'));
-
-app.get('/', function (req, res) {
-  res.sendFile(process.cwd() + '/views/index.html');
+app.use(express.static('public'))
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/views/index.html')
 });
 
 app.post("/api/fileanalyse", upload.single('upfile'), (req, res) => {
